@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-4@z)l32y*0_2wv63izd=lt17fjqjnx$a0eiuir^_-m$(1qrh-(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "telegram-app.shitob.live",
+]
 
 
 # Application definition

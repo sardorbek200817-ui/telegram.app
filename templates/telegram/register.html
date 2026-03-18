@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>NexTalk Register</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-black text-white">
+
+  <!-- Background -->
+  <div class="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-purple-700/20 blur-3xl"></div>
+
+  <div class="relative h-screen flex items-center justify-center">
+
+    <!-- Card -->
+    <div class="w-[420px] p-8 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10 shadow-2xl">
+
+      <!-- Title -->
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold">NexTalk</h1>
+        <p class="text-gray-400 text-sm mt-2">
+          Create your account
+        </p>
+      </div>
+
+      <!-- Form -->
+      <form method="POST">
+        {% csrf_token %}
+
+        <!-- First Name -->
+        <input
+          type="text"
+          name="first_name"
+          placeholder="First Name"
+          required
+          class="w-full mb-4 p-3 rounded-lg bg-black/40 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+
+        <!-- Last Name -->
+        <input
+          type="text"
+          name="last_name"
+          placeholder="Last Name"
+          required
+          class="w-full mb-4 p-3 rounded-lg bg-black/40 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+
+        <!-- Email -->
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          required
+          class="w-full mb-4 p-3 rounded-lg bg-black/40 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+
+        <!-- Password -->
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          required
+          class="w-full mb-5 p-3 rounded-lg bg-black/40 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
+
+        <!-- Button -->
+        <button
+          type="submit"
+          class="w-full p-3 rounded-lg bg-blue-600 hover:bg-blue-700 transition font-medium"
+        >
+          Create Account
+        </button>
+      </form>
+
+      <!-- Footer -->
+      <p class="text-center text-sm text-gray-400 mt-6">
+        Already have an account?
+        <a href="/login" class="text-blue-400 hover:underline">
+          Login
+        </a>
+      </p>
+
+    </div>
+  </div>
+
+</body>
+</html>

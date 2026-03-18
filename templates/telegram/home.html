@@ -1,0 +1,265 @@
+
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexTalk Elite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        
+        :root { --bg-color: #020617; --glass-color: rgba(30, 41, 59, 0.4); --text-color: #e2e8f0; }
+        .light-mode { --bg-color: #f1f5f9; --glass-color: rgba(255, 255, 255, 0.8); --text-color: #0f172a; }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-color); color: var(--text-color); overflow: hidden; transition: background 0.3s ease; }
+        .glass { background: var(--glass-color); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        
+        /* PREMIUM ANIMATSIYALAR */
+        .chat-item { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
+        .chat-item:hover { background: rgba(255, 255, 255, 0.05); transform: translateX(8px); box-shadow: -4px 0 0 #3b82f6; }
+        .chat-item.selected-active { background: rgba(59, 130, 246, 0.15); border-left: 4px solid #3b82f6; }
+
+        /* KONTAKTLAR UCHUN MAXSUS DIZAYN */
+        .contact-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        .contact-card:hover {
+            background: linear-gradient(145deg, rgba(59, 130, 246, 0.1), rgba(255, 255, 255, 0.02));
+            border-color: rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .msg-pop { animation: msgFadeUp 0.3s ease-out forwards; }
+        @keyframes msgFadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .sidebar-left { position: absolute; left: -100%; top: 0; bottom: 0; width: 300px; background: #0f172a; z-index: 50; transition: left 0.3s ease; border-right: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-left.active { left: 0; }
+        .sidebar-right { transform: translateX(100%); transition: transform 0.3s ease; }
+        .sidebar-right.active { transform: translateX(0); }
+        .active-tab { color: #3b82f6; background: rgba(59, 130, 246, 0.1); border-radius: 16px; }
+        .hidden-panel { display: none; }
+        #msgContainer { background-size: cover; background-position: center; transition: background 0.5s ease; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+
+        /* EMOJI PICKER PANEL */
+        #emojiPicker { display: none; position: absolute; bottom: 85px; left: 20px; background: #1e293b; border: 1px solid #334155; border-radius: 15px; padding: 10px; grid-template-columns: repeat(5, 1fr); gap: 5px; z-index: 60; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .emoji-item { cursor: pointer; padding: 5px; text-align: center; transition: transform 0.2s; }
+        .emoji-item:hover { transform: scale(1.3); }
+    </style>
+</head>
+<body class="h-screen p-3 lg:p-5 flex gap-4">
+
+    <div id="myProfileSidebar" class="sidebar-left flex flex-col shadow-2xl overflow-hidden">
+        <div class="p-6 bg-gradient-to-br from-blue-900 to-slate-900 border-b border-white/10">
+            <button onclick="toggleMyProfile()" class="text-gray-400 mb-4 hover:text-white"><i class="fas fa-arrow-left"></i></button>
+            <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-2xl font-bold mb-3 border border-white/20">G</div>
+            <h2 class="font-bold text-lg text-white">Profil</h2>
+            <p class="text-blue-400 text-xs italic">@username</p>
+        </div>
+        <div class="flex-1 py-4 overflow-y-auto">
+            <p class="px-6 py-2 text-[10px] text-gray-500 font-bold uppercase tracking-widest">Sozlamalar</p>
+            <div onclick="toggleTheme()" class="px-6 py-3 flex items-center justify-between hover:bg-white/5 cursor-pointer text-sm">
+                <div class="flex items-center gap-4"><i class="fas fa-moon text-gray-500"></i> Tun rejimi</div>
+                <div id="themeToggle" class="w-8 h-4 bg-gray-600 rounded-full relative"><div class="w-3 h-3 bg-white rounded-full absolute top-0.5 left-0.5 transition-transform" id="toggleCircle"></div></div>
+            </div>
+            <div class="px-6 py-3 flex flex-col gap-2 border-b border-white/5 pb-4">
+                <div class="text-sm flex items-center gap-4"><i class="fas fa-image text-gray-500"></i> Chat foni</div>
+                <div class="flex gap-2">
+                    <button onclick="changeBg('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070')" class="w-8 h-8 rounded bg-slate-800 border border-white/10"></button>
+                    <button onclick="changeBg('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2029')" class="w-8 h-8 rounded bg-blue-900 border border-white/10"></button>
+                    <button onclick="changeBg('')" class="w-8 h-8 rounded bg-black border border-white/20 flex items-center justify-center text-xs text-white">X</button>
+                </div>
+            </div>
+        </div>
+        <div class="p-4 bg-black/20"><a href="#" class="flex items-center justify-center gap-2 w-full py-3 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition font-bold text-xs">TIZIMDAN CHIQISH</a></div>
+    </div>
+
+    <nav class="w-20 glass rounded-[2rem] flex flex-col items-center py-8 justify-between z-40">
+        <div class="flex flex-col gap-6 items-center w-full px-2">
+            <div class="text-blue-500 text-3xl mb-4"><i class="fas fa-paper-plane"></i></div>
+            <button onclick="switchTab('chats', this)" class="nav-btn p-4 text-xl text-blue-500 active-tab transition-all"><i class="fas fa-comment-dots"></i></button>
+            <button onclick="switchTab('contacts', this)" class="nav-btn p-4 text-xl text-gray-500 hover:text-white transition-all"><i class="fas fa-user-friends"></i></button>
+        </div>
+        <button onclick="toggleMyProfile()" class="hover:scale-110 transition-transform relative">
+            <div class="w-12 h-12 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center font-bold border border-white/20">G</div>
+            <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-[#020617] rounded-full"></div>
+        </button>
+    </nav>
+
+    <div class="w-80 glass rounded-[2rem] flex flex-col overflow-hidden z-30">
+        <div class="p-6">
+            <h2 id="panelTitle" class="text-xl font-bold mb-4">Chatlar</h2>
+            <div class="relative"><i class="fas fa-search absolute left-3 top-3 text-gray-500 text-sm"></i>
+                <input type="text" id="universalSearch" onkeyup="globalFilter()" placeholder="Qidiruv..." class="w-full bg-white/5 border border-white/5 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none">
+            </div>
+        </div>
+        
+        <div id="listContainer" class="flex-1 overflow-y-auto px-4 space-y-1">
+            <div id="chatsPanel" class="space-y-1">
+                <div class="chat-item flex items-center gap-3 p-3 rounded-2xl cursor-pointer" onclick="selectChat(this, 'Otabek', '@otabek', '+998 88 001 67 77', 'Python Developer')">
+                    <div class="w-12 h-12 rounded-2xl bg-orange-500/20 flex items-center justify-center text-orange-500 font-bold">O</div>
+                    <div class="flex-1 min-w-0"><div class="flex justify-between font-semibold text-sm text-white"><span>Otabek</span><span class="text-[10px] text-gray-500">14:20</span></div><p class="text-xs text-gray-500 truncate">Loyihani topshirdik!</p></div>
+                </div>
+                <div class="chat-item flex items-center gap-3 p-3 rounded-2xl cursor-pointer" onclick="selectChat(this, 'Umarxon', '@umarxon', '+998 97 820 07 17', 'UI/UX Designer')">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center text-blue-500 font-bold">U</div>
+                    <div class="flex-1 min-w-0"><div class="flex justify-between font-semibold text-sm text-white"><span>Umarxon</span><span class="text-[10px] text-gray-500">12:10</span></div><p class="text-xs text-gray-500 truncate">Yangi dizaynni ko'r.</p></div>
+                </div>
+            </div>
+
+            <div id="contactsPanel" class="hidden-panel space-y-3 pt-2">
+                <div class="contact-card p-4 cursor-pointer flex flex-col gap-3" onclick="selectChat(this, 'Jasur', '@jasur_work', '+998 90 333 44 55', 'Lead Hamkasb')">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold">J</div>
+                        <div class="flex-1"><h4 class="text-sm font-bold text-white">Jasur</h4><p class="text-[10px] text-emerald-500 font-medium">Online</p></div>
+                        <i class="fas fa-comment-medical text-gray-500 text-xs"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-1 glass rounded-[2rem] flex overflow-hidden relative shadow-2xl z-20">
+        <div class="flex-1 flex flex-col border-r border-white/5">
+            <header class="p-5 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
+                <div class="flex items-center gap-4 cursor-pointer" onclick="toggleRightSidebar()">
+                    <div id="activeAvatar" class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-bold text-white">?</div>
+                    <div><h2 id="activeChatName" class="font-bold text-sm text-white">Suhbat tanlang</h2><span class="text-[10px] text-gray-500 italic">online</span></div>
+                </div>
+                <div class="flex gap-4 text-gray-400">
+                    <i class="fas fa-phone hover:text-white cursor-pointer"></i>
+                    <i onclick="toggleRightSidebar()" class="fas fa-ellipsis-vertical hover:text-white cursor-pointer px-2"></i>
+                </div>
+            </header>
+            <div id="msgContainer" class="flex-1 p-6 overflow-y-auto space-y-4"></div>
+            
+            <div id="emojiPicker" class="grid">
+                <span class="emoji-item" onclick="addEmoji('😊')">😊</span>
+                <span class="emoji-item" onclick="addEmoji('😂')">😂</span>
+                <span class="emoji-item" onclick="addEmoji('🔥')">🔥</span>
+                <span class="emoji-item" onclick="addEmoji('👍')">👍</span>
+                <span class="emoji-item" onclick="addEmoji('❤️')">❤️</span>
+                <span class="emoji-item" onclick="addEmoji('🙌')">🙌</span>
+                <span class="emoji-item" onclick="addEmoji('✨')">✨</span>
+                <span class="emoji-item" onclick="addEmoji('😎')">😎</span>
+                <span class="emoji-item" onclick="addEmoji('🤔')">🤔</span>
+                <span class="emoji-item" onclick="addEmoji('✅')">✅</span>
+            </div>
+
+            <div class="p-5">
+                <div class="bg-white/5 rounded-2xl p-2 flex items-center gap-2 border border-white/5">
+                    <button onclick="toggleEmoji()" class="w-10 h-10 text-gray-400 hover:text-white transition"><i class="far fa-face-smile"></i></button>
+                    <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="sendImage(this)">
+                    <button onclick="document.getElementById('imageInput').click()" class="w-10 h-10 text-gray-400 hover:text-white transition"><i class="fas fa-image"></i></button>
+                    <input type="text" id="msgInput" placeholder="Xabar..." class="flex-1 bg-transparent px-2 py-2 focus:outline-none text-sm text-white">
+                    <button onclick="send()" class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg"><i class="fas fa-paper-plane text-xs text-white"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div id="rightSidebar" class="w-80 bg-[#0f172a] absolute right-0 inset-y-0 z-50 sidebar-right border-l border-white/10 flex flex-col">
+            <div class="p-5 border-b border-white/5 flex items-center gap-4 text-white">
+                <button onclick="toggleRightSidebar()"><i class="fas fa-xmark"></i></button><span class="font-bold">Ma'lumot</span>
+            </div>
+            <div id="infoPic" class="w-full h-64 bg-blue-600 flex items-center justify-center text-6xl font-bold text-white">?</div>
+            <div class="p-6 space-y-4 text-white">
+                <h2 id="infoName" class="text-xl font-bold">Ism</h2>
+                <div class="flex items-center gap-4"><i class="fas fa-at text-blue-500 w-5"></i><span id="infoUsername" class="text-sm">@user</span></div>
+                <div class="flex items-center gap-4"><i class="fas fa-phone text-blue-500 w-5"></i><span id="infoPhone" class="text-sm">+998...</span></div>
+                <div class="flex items-center gap-4"><i class="fas fa-info-circle text-blue-500 w-5"></i><span id="infoBio" class="text-sm italic">Bio</span></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function toggleMyProfile() { document.getElementById('myProfileSidebar').classList.toggle('active'); }
+        function toggleRightSidebar() { document.getElementById('rightSidebar').classList.toggle('active'); }
+
+        function toggleEmoji() {
+            const picker = document.getElementById('emojiPicker');
+            picker.style.display = picker.style.display === 'grid' ? 'none' : 'grid';
+        }
+
+        function addEmoji(emoji) {
+            document.getElementById('msgInput').value += emoji;
+            toggleEmoji();
+            document.getElementById('msgInput').focus();
+        }
+
+        // Telegram uslubidagi rasm hajmi to'g'rilandi
+        function sendImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgHtml = `
+                        <div class="flex justify-end msg-pop">
+                            <div class="bg-blue-600/30 p-1.5 rounded-2xl rounded-tr-none max-w-[280px] border border-white/10 overflow-hidden">
+                                <img src="${e.target.result}" class="rounded-xl w-full h-auto object-cover shadow-md">
+                            </div>
+                        </div>`;
+                    document.getElementById('msgContainer').insertAdjacentHTML('beforeend', imgHtml);
+                    const c = document.getElementById('msgContainer'); c.scrollTop = c.scrollHeight;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function selectChat(el, name, username, phone, bio) {
+            document.querySelectorAll('.chat-item, .contact-card').forEach(c => c.classList.remove('selected-active'));
+            el.classList.add('selected-active');
+            document.getElementById('activeChatName').innerText = name;
+            document.getElementById('activeAvatar').innerText = name.charAt(0);
+            document.getElementById('infoName').innerText = name;
+            document.getElementById('infoPic').innerText = name.charAt(0);
+            document.getElementById('infoUsername').innerText = username;
+            document.getElementById('infoPhone').innerText = phone;
+            document.getElementById('infoBio').innerText = bio || 'Bio mavjud emas';
+            document.getElementById('msgContainer').innerHTML = `<div class="text-center text-[10px] text-gray-500 mt-10 msg-pop">Xabarlar tarixi yuklandi</div>`;
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const circle = document.getElementById('toggleCircle');
+            const isLight = document.body.classList.contains('light-mode');
+            circle.style.transform = isLight ? 'translateX(16px)' : 'translateX(0)';
+            document.getElementById('themeToggle').style.backgroundColor = isLight ? '#3b82f6' : '#4b5563';
+        }
+
+        function changeBg(url) {
+            document.getElementById('msgContainer').style.backgroundImage = url ? `url('${url}')` : 'none';
+        }
+
+        function switchTab(tab, btn) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-tab', 'text-blue-500'));
+            btn.classList.add('active-tab', 'text-blue-500');
+            document.getElementById('chatsPanel').classList.toggle('hidden-panel', tab !== 'chats');
+            document.getElementById('contactsPanel').classList.toggle('hidden-panel', tab !== 'contacts');
+            document.getElementById('panelTitle').innerText = tab === 'chats' ? 'Chatlar' : 'Kontaktlar';
+        }
+
+        function send() {
+            const input = document.getElementById('msgInput');
+            if(!input.value) return;
+            const msgHtml = `<div class="flex justify-end msg-pop"><div class="bg-blue-600 p-3 rounded-2xl rounded-tr-none text-sm max-w-[80%] shadow-lg text-white">${input.value}</div></div>`;
+            document.getElementById('msgContainer').insertAdjacentHTML('beforeend', msgHtml);
+            input.value = '';
+            const c = document.getElementById('msgContainer'); c.scrollTop = c.scrollHeight;
+        }
+
+        function globalFilter() {
+            const query = document.getElementById('universalSearch').value.toLowerCase();
+            document.querySelectorAll('.chat-item, .contact-card').forEach(item => {
+                const text = item.innerText.toLowerCase();
+                item.style.display = text.includes(query) ? 'flex' : 'none';
+            });
+        }
+
+        document.getElementById('msgInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') send(); });
+    </script>
+</body>
+</html>

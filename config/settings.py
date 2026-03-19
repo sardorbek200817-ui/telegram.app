@@ -26,9 +26,7 @@ SECRET_KEY = 'django-insecure-4@z)l32y*0_2wv63izd=lt17fjqjnx$a0eiuir^_-m$(1qrh-(
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'telegram-app-cekp-0rrr.shitob.live', 
-    'localhost', 
-    '127.0.0.1'
+    "*"
 ]
 
 
